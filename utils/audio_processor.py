@@ -24,7 +24,7 @@ def download_youtube_audio(url : str) ->  str:
         filename = ydl.prepare_filename(info).replace(".webm",".wav").replace(".m4a",".wav")
     return filename
 
-data = download_youtube_audio("https://www.youtube.com/watch?v=Uoz_osFtw68")
+data = download_youtube_audio("https://www.youtube.com/watch?v=XtT5i0ZeHHE")
 
 def preprocess_audio(input_path: str) -> str:
     """Convert audio to mono and set sample rate to 16 kHz."""
@@ -34,4 +34,22 @@ def preprocess_audio(input_path: str) -> str:
     audio.export(output_path,format="wav")
     return output_path
 
-preprocess_audio(data)
+
+
+def chunk_audio(wav_path: str, chunk_minutes: int = 10) -> list:
+    audio = AudioSegment.from_wav(wav_path)
+    chunk_ms = chunk_minutes * 60 * 1000 # minutes converted to mili seconds(ms)
+    chunks = []
+
+    for i , start in enumerate(range(0,len(audio),chunk_ms)):
+        chunk = audio[start : start + chunk_ms]
+        chunk_path = f"{wav_path}_chunk_{i}.wav"
+        
+        chunk.export(chunk_path, format = "wav")
+
+        chunks.append(chunk_path)
+
+    return chunks
+
+converted_audio = preprocess_audio(data)
+print(chunk_audio(converted_audio))
