@@ -21,10 +21,9 @@ def download_youtube_audio(url : str) ->  str:
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
-        filename = ydl.prepare_filename(info).replace(".webm",".wav").replace(".m4a",".wav")
+        filename = os.path.splitext(ydl.prepare_filename(info))[0] + ".wav"
     return filename
 
-data = download_youtube_audio("https://www.youtube.com/watch?v=XtT5i0ZeHHE")
 
 def preprocess_audio(input_path: str) -> str:
     """Convert audio to mono and set sample rate to 16 kHz."""
@@ -51,5 +50,20 @@ def chunk_audio(wav_path: str, chunk_minutes: int = 10) -> list:
 
     return chunks
 
-converted_audio = preprocess_audio(data)
-print(chunk_audio(converted_audio))
+def process_input(source: str) -> list:
+    if source.startswith("http://") or source.startswith("https://"):
+        print("Detected YouTube URL. Downloading audio...")
+        download_path = download_youtube_audio(source)
+        wav_path = preprocess_audio(download_path)
+    else:
+        print("Detected local file. Converting to WAV...")
+        wav_path = preprocess_audio(source)
+
+    print("Chunking audio...")
+    chunks = chunk_audio(wav_path)
+    print(f"Audio ready - {len(chunks)} chunk(s) created.")
+    return chunks
+
+if __name__ == "__main__":
+    chunks = process_input("https://www.youtube.com/watch?v=XtT5i0ZeHHE")
+    print(chunks)
