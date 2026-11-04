@@ -64,6 +64,3 @@ def process_input(source: str) -> list:
     print(f"Audio ready - {len(chunks)} chunk(s) created.")
     return chunks
 
-if __name__ == "__main__":
-    chunks = process_input("https://www.youtube.com/watch?v=XtT5i0ZeHHE")
-    print(chunks)
