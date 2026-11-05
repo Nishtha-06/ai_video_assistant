@@ -17,6 +17,13 @@ def download_youtube_audio(url : str) ->  str:
                 "preferredquality":"192"
             }
         ],
+        # Retry settings
+        "retries": 10,
+        "fragment_retries": 10,
+        "extractor_retries": 5,
+        "file_access_retries": 5,
+        "continuedl": True,
+
         "quiet":True
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
